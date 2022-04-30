@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">MyPlantpediA</string>
+    <string name="myPedia">My植物図鑑</string>
+    <string name="myRecent">最近の登録</string>
+    <string name="clearChecker">クリアチェッカー</string>
+    <string name="angiosperm">被子植物</string>
+    <string name="gymnosperm">裸子植物</string>
+    <string name="pteridophytes">シダ植物</string>
+    <string name="eudicots">真正双子葉類</string>
+    <string name="chrysanthemums">キク類</string>
+    <string-array name="lv_menu">
+        <item>被子植物</item>
+        <item>裸子植物</item>
+        <item>シダ植物</item>
+    </string-array>
+    <string name="home">ホームに戻る</string>
+    <string name="delete">このアイテムを削除する</string>
+    <string name="addItem">追加</string>
+</resources>
