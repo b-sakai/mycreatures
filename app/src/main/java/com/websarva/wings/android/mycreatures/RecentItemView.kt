@@ -47,7 +47,7 @@ class RecentItemView : AppCompatActivity() {
             val createdTime = formatter.format(date)
             var menu = mutableMapOf<String, Any>(
                 "speciesName" to item.name,
-                "parentName" to item.parentName,
+                "parentName" to if (item.parentName.isNullOrEmpty()) "" else item.parentName.last(),
                 "createDate" to createdTime
             )
             menuList.add(menu)

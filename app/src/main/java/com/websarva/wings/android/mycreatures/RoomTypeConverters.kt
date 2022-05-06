@@ -15,8 +15,13 @@ internal class RoomTypeConverters {
     companion object {
         @JvmStatic
         @TypeConverter
-        fun commaStringToList(commaString: String): List<String> =
-            commaString.split(",").map { it.trim() }
+        fun commaStringToList(commaString: String): List<String> {
+            return if (commaString == "") {
+                listOf<String>()
+            } else {
+                commaString.split(",").map { it.trim() }
+            }
+        }
 
         @JvmStatic
         @TypeConverter

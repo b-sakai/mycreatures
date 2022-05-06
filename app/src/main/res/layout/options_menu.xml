@@ -6,7 +6,7 @@
         app:showAsAction="never"
         android:title="@string/home"/>
     <item
-        android:id="@+id/menuListDelete"
+        android:id="@+id/menuListTreeView"
         app:showAsAction="never"
-        android:title="@string/delete"/>
+        android:title="ツリー表示に切り替える"/>
 </menu>

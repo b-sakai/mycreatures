@@ -79,10 +79,7 @@ class PhylogeneticTree : AppCompatActivity() {
         // リスなクラスのインスタンスを生成
         val listener = ParentLinkListener()
         val layout = findViewById<LinearLayout>(R.id.parentBar)
-        var parentTreeText = intent.getStringArrayListExtra("parentTree")
-        if (parentTreeText.isNullOrEmpty()) {
-            parentTreeText = currentItem?.parentName as ArrayList<String>
-        }
+        var parentTreeText = currentItem?.parentName as List<String>
         //Log.i("MyPlantpediA", ptext)
         if (parentTreeText != null) {
             for (pitem in parentTreeText) {
@@ -281,10 +278,19 @@ class PhylogeneticTree : AppCompatActivity() {
     // 子アイテムリストを表示する
     fun showChildrenItemList() {
         var stringList = mutableListOf<String>()
-        currentItem?.childrenName?.forEach { item ->
-            stringList.add(item)
+        Log.i("MyPlantpediA children list = ", stringList.size.toString())
+        if (currentItem != null) {
+            val childList = currentItem?.childrenName
+            if (childList != null && childList.isNotEmpty()) {
+                for (item in childList) {
+                    if (item != "") {
+                        stringList.add(item)
+                    }
+                }
+            }
         }
         Log.i("MyPlantpediA children list = ", stringList.toString())
+        Log.i("MyPlantpediA children list = ", stringList.size.toString())
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerMenu)
         recyclerView.adapter = RecyclerAdapter(stringList)
         val layout = LinearLayoutManager(this@PhylogeneticTree)
@@ -296,10 +302,8 @@ class PhylogeneticTree : AppCompatActivity() {
         /*
         val adapter = ArrayAdapter(this@PhylogeneticTree, android.R.layout.simple_list_item_1, stringList)
         val lvMenu = findViewById<ListView>(R.id.lvMenu)
-
         lvMenu.adapter = adapter
         lvMenu.onItemClickListener = ListItemClickListener()
-
         registerForContextMenu(lvMenu)
          */
     }
@@ -397,7 +401,10 @@ class PhylogeneticTree : AppCompatActivity() {
                 lifecycleScope.launch {
                     val result = insertNewItem(newItemName) as Boolean
                     if (result) {
-                        var childrenList = currentItem?.childrenName as MutableList<String>
+                        var childrenList = mutableListOf<String>()
+                        if (!currentItem?.childrenName.isNullOrEmpty()) {
+                            childrenList = currentItem?.childrenName as MutableList<String>
+                        }
                         childrenList.add(newItemName)
                         currentItem?.childrenName = childrenList
                         saveSpeiciesDatabase()
@@ -413,6 +420,7 @@ class PhylogeneticTree : AppCompatActivity() {
 
     suspend fun insertNewItem(newItemName: String): Boolean {
         val nextParentList = currentItem?.parentName!! + currentItem?.name
+        Log.i("MyPlantpediA", nextParentList.toString())
         val newItem = SpeciesEntity(newItemName, "", nextParentList as List<String>, listOf<String>())
 
         val db = SpeciesRoomDatabase.getDatabase(this@PhylogeneticTree)
@@ -445,6 +453,12 @@ class PhylogeneticTree : AppCompatActivity() {
                 val intent2MainActivity = Intent(this@PhylogeneticTree, MainActivity::class.java)
                 startActivity(intent2MainActivity)
             }
+            // ツリー表示に切り替える
+            R.id.menuListTreeView -> {
+                val intent2TreeView = Intent(this@PhylogeneticTree, TreeView::class.java)
+                startActivity(intent2TreeView)
+            }
+
         }
         return super.onOptionsItemSelected(item)
     }
