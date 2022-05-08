@@ -6,19 +6,20 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.websarva.wings.android.opengl.ShaderView
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    // データベースヘルパーオブジェクト
-    private val _helper = DatabaseHelper(this@MainActivity)
-
+    private lateinit var glView: ShaderView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        glView = findViewById<ShaderView>(R.id.shaderView)
         lifecycleScope.launch {
-            deleteDatabase()
-            createBaseDatabase()
-            checkDatabase()
+            //deleteDatabase()
+            //createBaseDatabase()
+            //checkDatabase()
         }
     }
 
