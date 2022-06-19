@@ -378,13 +378,15 @@ class PhylogeneticTree : AppCompatActivity() {
     // posの位置の子アイテムを削除する
     fun deleteCurrentItem(pos: Int) {
         val newList = currentItem?.childrenName as MutableList<String>?
+        val deleteItemName = newList?.get(pos)
         newList?.removeAt(pos)
+        lifecycleScope.launch {
+            deleteSpeciesDatabase(deleteItemName)
+            saveSpeiciesDatabase()
+        }
         currentItem?.childrenName = newList!!
         // 再表示する
         showChildrenItemList()
-        lifecycleScope.launch {
-            saveSpeiciesDatabase()
-        }
     }
     // endregion
 
@@ -470,6 +472,12 @@ class PhylogeneticTree : AppCompatActivity() {
         val speciesDao = db.speciesDao()
         currentItem?.let { speciesDao.delete(it) }
         currentItem?.let { speciesDao.updateWithTimestamp(it) }
+    }
+
+    suspend fun deleteSpeciesDatabase(deleteItemName: String?) {
+        val db = SpeciesRoomDatabase.getDatabase(this@PhylogeneticTree)
+        val speciesDao = db.speciesDao()
+        deleteItemName?.let { speciesDao.deleteByKey(it) }
     }
     // endregion
 

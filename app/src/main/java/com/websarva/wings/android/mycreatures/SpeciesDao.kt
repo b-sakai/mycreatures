@@ -17,11 +17,17 @@ interface SpeciesDao {
     @Query("DELETE FROM creatures")
     suspend fun clear()
 
+    @Query("DELETE FROM creatures WHERE name = :key")
+    suspend fun deleteByKey(key: String)
+
     @Query("SELECT * FROM creatures WHERE name = :key")
     suspend fun get(key: String): SpeciesEntity?
 
     @Query("SELECT * FROM creatures")
     suspend fun getAllItem(): List<SpeciesEntity>
+
+    @Query("SELECT * FROM creatures")
+    fun getAllItemUIThread(): List<SpeciesEntity>
 
     suspend fun insertWithTimestamp(species: SpeciesEntity) {
         insert(species.apply{

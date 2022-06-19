@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable-anydpi/ic_add_photo.xml" value="0.1" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1575" />
+        <entry key="app/src/main/res/drawable/leaf_background.xml" value="0.1195" />
         <entry key="app/src/main/res/drawable/node_background.xml" value="0.1235" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_phylogenetic_tree.xml" value="0.34193840579710144" />
