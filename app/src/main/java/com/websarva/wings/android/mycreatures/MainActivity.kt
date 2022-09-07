@@ -17,9 +17,9 @@ class MainActivity : AppCompatActivity() {
 
         glView = findViewById<ShaderView>(R.id.shaderView)
         lifecycleScope.launch {
-            deleteDatabase()
-            createBaseDatabase()
-            checkDatabase()
+            //deleteDatabase()
+            //createBaseDatabase()
+            //checkDatabase()
         }
     }
 
