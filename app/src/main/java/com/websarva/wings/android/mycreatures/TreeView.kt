@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 
 class TreeView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.i("TreeView", "onCreate() is Called")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tree_view)
         val recycler = findViewById<RecyclerView>(R.id.recycler_tree_view)

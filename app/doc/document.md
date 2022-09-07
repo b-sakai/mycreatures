@@ -4,6 +4,11 @@
 
 アプリ名：PlantpediA
 
+## database保存先
+
+(debug build 限定)/data/data/com.websarva.wings.android.mycreatures
+
+
 ## MY植物図鑑
 
 ### 必要なレイアウト

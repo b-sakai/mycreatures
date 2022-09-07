@@ -470,7 +470,6 @@ class PhylogeneticTree : AppCompatActivity() {
     suspend fun saveSpeiciesDatabase() {
         val db = SpeciesRoomDatabase.getDatabase(this@PhylogeneticTree)
         val speciesDao = db.speciesDao()
-        currentItem?.let { speciesDao.delete(it) }
         currentItem?.let { speciesDao.updateWithTimestamp(it) }
     }
 

@@ -1,15 +1,15 @@
 package com.websarva.wings.android.mycreatures
 
 import android.media.Image
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface SpeciesDao {
     @Insert
     suspend fun insert(species: SpeciesEntity)
+
+    @Update
+    suspend fun update(species: SpeciesEntity)
 
     @Delete
     suspend fun delete(species: SpeciesEntity)
@@ -36,7 +36,7 @@ interface SpeciesDao {
         })
     }
     suspend fun updateWithTimestamp(species: SpeciesEntity) {
-        insert(species.apply{
+        update(species.apply{
             modifiedAt = System.currentTimeMillis()
         })
     }
