@@ -41,43 +41,55 @@
             android:src="@drawable/ic_add_photo"/>
     </LinearLayout>
 
-    <HorizontalScrollView
-        xmlns:tools="http://schemas.android.com/tools"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        tools:context=".PhylogeneticTree">
+        android:layout_height="match_parent"
+        android:isScrollContainer="false"
+        android:id="@+id/scrollView">
         <LinearLayout
-            android:id="@+id/photoBlock"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"/>
-    </HorizontalScrollView>
+            android:id="@+id/LinearLayout"
+            android:orientation="vertical"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent">
+            <HorizontalScrollView
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                tools:context=".PhylogeneticTree">
+                <LinearLayout
+                    android:id="@+id/photoBlock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"/>
+            </HorizontalScrollView>
 
-    <EditText
-        android:id="@+id/explanation"
-        android:inputType="textMultiLine"
-        android:imeActionLabel="actionDone"
-        android:textSize="12sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/explanation"
+                android:inputType="textMultiLine"
+                android:imeActionLabel="actionDone"
+                android:textSize="12sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
-    <ListView
-        android:id="@+id/lvMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerMenu"
-        android:scrollbars="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-    <Button
-        android:id="@+id/addItem"
-        android:text="@string/addItem"
-        android:textColor="@color/black"
-        android:backgroundTint="@color/white"
-        android:onClick="addChildrenItem"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+            <ListView
+                android:id="@+id/lvMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerMenu"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            <Button
+                android:id="@+id/addItem"
+                android:text="@string/addItem"
+                android:textColor="@color/black"
+                android:backgroundTint="@color/white"
+                android:onClick="addChildrenItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
