@@ -61,6 +61,7 @@
         android:layout_marginBottom="292dp"
         android:text="@string/clearChecker"
         android:textSize="10sp"
+        android:backgroundTint="#777777"
         android:onClick="createClearChecker"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

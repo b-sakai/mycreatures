@@ -9,4 +9,8 @@
         android:id="@+id/menuListTreeView"
         app:showAsAction="never"
         android:title="ツリー表示に切り替える"/>
+    <item
+        android:id="@+id/addFromWikipedia"
+        app:showAsAction="never"
+        android:title="Wikipediaから追加する"/>
 </menu>

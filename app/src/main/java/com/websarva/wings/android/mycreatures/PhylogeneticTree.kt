@@ -15,6 +15,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebView
 import android.widget.*
 import android.widget.AdapterView.AdapterContextMenuInfo
 import androidx.appcompat.app.AlertDialog
@@ -293,19 +294,11 @@ class PhylogeneticTree : AppCompatActivity() {
         Log.i("MyPlantpediA children list = ", stringList.size.toString())
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerMenu)
         recyclerView.adapter = RecyclerAdapter(stringList)
-        val layout = LinearLayoutManager(this@PhylogeneticTree)
+        val layout = LinearLayoutManager(this)
         recyclerView.layoutManager = layout
         // 区切り線
-        val decorator = DividerItemDecoration(this@PhylogeneticTree, layout.orientation)
+        val decorator = DividerItemDecoration(this, layout.orientation)
         recyclerView.addItemDecoration(decorator)
-
-        /*
-        val adapter = ArrayAdapter(this@PhylogeneticTree, android.R.layout.simple_list_item_1, stringList)
-        val lvMenu = findViewById<ListView>(R.id.lvMenu)
-        lvMenu.adapter = adapter
-        lvMenu.onItemClickListener = ListItemClickListener()
-        registerForContextMenu(lvMenu)
-         */
     }
 
     private inner class ViewHolderList (item: View) : RecyclerView.ViewHolder(item) {
@@ -457,8 +450,15 @@ class PhylogeneticTree : AppCompatActivity() {
             }
             // ツリー表示に切り替える
             R.id.menuListTreeView -> {
-                val intent2TreeView = Intent(this@PhylogeneticTree, TreeView::class.java)
+                val intent2TreeView = Intent(this@PhylogeneticTree, TreeView::class.java).apply {
+                    putExtra("currentItem", currentItem?.name)
+                }
                 startActivity(intent2TreeView)
+            }
+            // Wikipediaから追加する
+            R.id.addFromWikipedia -> {
+                val intent2WebView = Intent(this@PhylogeneticTree, WebActivity::class.java)
+                startActivity(intent2WebView)
             }
 
         }

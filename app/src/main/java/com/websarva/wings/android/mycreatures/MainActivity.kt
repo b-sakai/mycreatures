@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.websarva.wings.android.opengl.ShaderView
@@ -17,9 +18,9 @@ class MainActivity : AppCompatActivity() {
 
         glView = findViewById<ShaderView>(R.id.shaderView)
         lifecycleScope.launch {
-            deleteDatabase()
-            createBaseDatabase()
-            checkDatabase()
+            // deleteDatabase()
+            // createBaseDatabase()
+            // checkDatabase()
         }
     }
 
@@ -98,8 +99,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     public fun createClearChecker(view: View) {
+        Toast.makeText(this@MainActivity, "この機能はまだ実装されていません。", Toast.LENGTH_LONG).show()
+        return
+
         val intent2TreeView = Intent(this@MainActivity, TreeView::class.java)
         startActivity(intent2TreeView)
+
     }
 
 }

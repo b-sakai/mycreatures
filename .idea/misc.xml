@@ -5,10 +5,13 @@
       <map>
         <entry key="app/src/main/res/drawable-anydpi/ic_add_photo.xml" value="0.1" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1575" />
+        <entry key="app/src/main/res/drawable/current_background.xml" value="0.263" />
         <entry key="app/src/main/res/drawable/leaf_background.xml" value="0.1195" />
         <entry key="app/src/main/res/drawable/node_background.xml" value="0.1235" />
+        <entry key="app/src/main/res/layout/activity_add_item_from_web.xml" value="0.24139492753623187" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/activity_phylogenetic_tree.xml" value="0.34193840579710144" />
+        <entry key="app/src/main/res/layout/activity_phylogenetic_tree.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/activity_web.xml" value="0.17255434782608695" />
         <entry key="app/src/main/res/layout/list_context_menu.xml" value="0.34193840579710144" />
         <entry key="app/src/main/res/layout/options_menu.xml" value="0.10190217391304347" />
         <entry key="app/src/main/res/layout/recent_item_view.xml" value="0.11068895643363728" />
@@ -17,6 +20,7 @@
         <entry key="app/src/main/res/layout/tree.xml" value="0.24583333333333332" />
         <entry key="app/src/main/res/layout/tree_node.xml" value="0.11474164133738601" />
         <entry key="app/src/main/res/layout/tree_view.xml" value="0.20729166666666668" />
+        <entry key="app/src/main/res/layout/webview.xml" value="0.17255434782608695" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
       </map>

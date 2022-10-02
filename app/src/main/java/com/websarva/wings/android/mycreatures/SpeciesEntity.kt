@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 data class SpeciesEntity (
     @PrimaryKey
     @ColumnInfo(name="name")
-    val name: String = "",
+    var name: String = "",
 
     @ColumnInfo(name="explanation")
     var explanation: String,

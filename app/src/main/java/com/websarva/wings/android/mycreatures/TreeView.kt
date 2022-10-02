@@ -28,12 +28,15 @@ import kotlinx.coroutines.launch
 
 
 class TreeView : AppCompatActivity() {
+    private var currentItem : String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.i("TreeView", "onCreate() is Called")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tree_view)
         val recycler = findViewById<RecyclerView>(R.id.recycler_tree_view)
         recycler.visibility = View.GONE
+
+        currentItem = intent.getStringExtra("currentItem") as String
 
         lifecycleScope.launch {
             setupGraphView(this@TreeView)
@@ -79,7 +82,9 @@ class TreeView : AppCompatActivity() {
                 val isLeaf = !graph.hasSuccessor(graph.nodes[position])
                 holder.textView.text = getNodeData(position).toString()
                 holder.textView.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                if (isLeaf) {
+                if (holder.textView.text == currentItem) {
+                    holder.textView.setBackgroundResource(R.drawable.current_background)
+                } else if (isLeaf) {
                     holder.textView.setBackgroundResource(R.drawable.leaf_background)
                 } else {
                     holder.textView.setBackgroundResource(R.drawable.node_background)
