@@ -41,7 +41,7 @@ class RecentItemView : AppCompatActivity() {
     private suspend fun createRecentList(): MutableList<MutableMap<String, Any>> {
         val menuList: MutableList<MutableMap<String, Any>> = mutableListOf()
         val list = getCurrentItemFromDatabase()
-        for (item in list) {
+        for (item in list.reversed()) {
             val date = Date(item.createdAt)
             val formatter = SimpleDateFormat("yyyy.MM.dd 'at' HH::mm:ss")
             val createdTime = formatter.format(date)
