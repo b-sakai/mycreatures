@@ -1,12 +1,6 @@
-package com.websarva.wings.android.mycreatures
+package com.websarva.wings.android.mycreatures.database
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64.decode
-import android.util.Base64.encodeToString
 import androidx.room.TypeConverter
-import java.io.ByteArrayOutputStream
-import java.lang.Double.min
 import java.util.*
 
 

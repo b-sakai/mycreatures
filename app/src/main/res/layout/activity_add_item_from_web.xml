@@ -9,7 +9,7 @@
     android:focusable="true"
     android:orientation="vertical"
     android:background="#FFFF00"
-    tools:context=".AddItemFromWebActivity">
+    tools:context=".web.AddItemFromWebActivity">
 
     <TextView
         android:id="@+id/addMessage"

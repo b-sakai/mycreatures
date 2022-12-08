@@ -1,4 +1,4 @@
-package com.websarva.wings.android.mycreatures
+package com.websarva.wings.android.mycreatures.database
 
 import java.io.Serializable
 

@@ -1,4 +1,4 @@
-package com.websarva.wings.android.mycreatures
+package com.websarva.wings.android.mycreatures.database
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -19,7 +19,6 @@ class DatabaseHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME,
         sb.append("CREATE TABLE speicies (")
         sb.append("_id INTEGER PRIMARY KEY AUTOINCREMENT, ")
         sb.append("parentId INTEGER, ")
-        sb.append("children TEXT, ") // 子のidをテキストで保存
         sb.append("name TEXT, ")
         sb.append("explanation TEXT")
         sb.append(");")

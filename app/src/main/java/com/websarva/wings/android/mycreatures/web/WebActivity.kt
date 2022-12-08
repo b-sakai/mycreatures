@@ -1,4 +1,4 @@
-package com.websarva.wings.android.mycreatures
+package com.websarva.wings.android.mycreatures.web
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -13,6 +13,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.websarva.wings.android.mycreatures.R
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -20,7 +21,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.lang.Integer.min
 import java.net.URL
-import java.util.*
 
 
 class WebActivity : AppCompatActivity() {

@@ -1,6 +1,5 @@
-package com.websarva.wings.android.mycreatures
+package com.websarva.wings.android.mycreatures.database
 
-import android.media.Image
 import androidx.room.*
 
 @Dao
@@ -20,8 +19,14 @@ interface SpeciesDao {
     @Query("DELETE FROM creatures WHERE name = :key")
     suspend fun deleteByKey(key: String)
 
+    @Query("SELECT * FROM creatures WHERE id = :id")
+    suspend fun get(id: Int): SpeciesEntity?
+
     @Query("SELECT * FROM creatures WHERE name = :key")
-    suspend fun get(key: String): SpeciesEntity?
+    suspend fun getByName(key: String): SpeciesEntity?
+
+    @Query("SELECT * FROM creatures WHERE parent = :key")
+    suspend fun getChildrenItem(key: Int): List<SpeciesEntity>
 
     @Query("SELECT * FROM creatures")
     suspend fun getAllItem(): List<SpeciesEntity>
@@ -30,6 +35,13 @@ interface SpeciesDao {
     fun getAllItemUIThread(): List<SpeciesEntity>
 
     suspend fun insertWithTimestamp(species: SpeciesEntity) {
+        insert(species.apply{
+            createdAt = System.currentTimeMillis()
+            modifiedAt = System.currentTimeMillis()
+        })
+    }
+
+    suspend fun insertWithTimestampOld(species: SpeciesEntity) {
         insert(species.apply{
             createdAt = System.currentTimeMillis()
             modifiedAt = System.currentTimeMillis()

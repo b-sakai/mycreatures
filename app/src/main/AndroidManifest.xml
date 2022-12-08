@@ -12,10 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyCreatures">
         <activity
-            android:name=".AddItemFromWebActivity"
+            android:name=".web.AddItemFromWebActivity"
             android:exported="false" />
         <activity
-            android:name=".WebActivity"
+            android:name=".web.WebActivity"
             android:exported="false" />
         <activity
             android:name=".PhylogeneticTree"

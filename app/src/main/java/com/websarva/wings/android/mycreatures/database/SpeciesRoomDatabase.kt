@@ -1,4 +1,4 @@
-package com.websarva.wings.android.mycreatures
+package com.websarva.wings.android.mycreatures.database
 
 import android.content.Context
 import androidx.room.Database
@@ -15,7 +15,7 @@ abstract class SpeciesRoomDatabase: RoomDatabase() {
         @Volatile
         private var INSTANCE: SpeciesRoomDatabase? = null
         fun getDatabase(context: Context): SpeciesRoomDatabase {
-            return INSTANCE?: synchronized(this) {
+            return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     SpeciesRoomDatabase::class.java,

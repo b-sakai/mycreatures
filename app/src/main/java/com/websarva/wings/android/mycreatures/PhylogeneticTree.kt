@@ -15,9 +15,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.webkit.WebView
 import android.widget.*
-import android.widget.AdapterView.AdapterContextMenuInfo
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatEditText
@@ -25,8 +23,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.websarva.wings.android.mycreatures.database.SpeciesEntity
+import com.websarva.wings.android.mycreatures.database.SpeciesRoomDatabase
 import com.websarva.wings.android.mycreatures.R.layout.options_menu
+import com.websarva.wings.android.mycreatures.web.WebActivity
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -41,19 +43,19 @@ class PhylogeneticTree : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_phylogenetic_tree)
 
-        val name = intent.getStringExtra("currentName").toString()
+        val curId = intent?.getIntExtra("currentId", 0) as Int
         // データベースからカレントアイテムを取得する
         lifecycleScope.launch {
-            currentItem = getCurrentItemFromDatabae(name)
+            currentItem = getItemFromDatabase(curId)
             showUIs()
             currentItem?.toString()?.let { Log.i("MyplantpediA current item is ", it) }
         }
     }
 
-    suspend fun getCurrentItemFromDatabae(name: String): SpeciesEntity? {
+    suspend fun getItemFromDatabase(curId: Int): SpeciesEntity? {
         val db = SpeciesRoomDatabase.getDatabase(this@PhylogeneticTree)
         val speciesDao = db.speciesDao()
-        return speciesDao.get(name)
+        return speciesDao.get(curId)
     }
 
     suspend fun showUIs() {
@@ -76,49 +78,64 @@ class PhylogeneticTree : AppCompatActivity() {
 
     // region parentLink
     // 親アイテムリンクを表示する
-    fun showParentItemLink() {
+    suspend fun showParentItemLink() {
         // リスなクラスのインスタンスを生成
         val listener = ParentLinkListener()
         val layout = findViewById<LinearLayout>(R.id.parentBar)
-        var parentTreeText = currentItem?.parentName as List<String>
+        var parentId = currentItem?.parent
+        var parentList = mutableListOf<String>()
         //Log.i("MyPlantpediA", ptext)
-        if (parentTreeText != null) {
-            for (pitem in parentTreeText) {
-                //Log.i("MyPlantpediA", ptext)
-                if (pitem == "") {
-                    continue
-                }
-                // 親アイテムボタンの追加
-                val parentLink = Button(this@PhylogeneticTree)
-                parentLink.text = pitem
-                parentLink.textSize = 10F
-                parentLink.tag = pitem
-                parentLink.setOnClickListener(listener)
-                val wrapContent = ViewGroup.LayoutParams.WRAP_CONTENT
-                val lparams = LinearLayout.LayoutParams(wrapContent, wrapContent)
-                lparams.weight = 1F
-                layout.addView(parentLink, lparams)
-                // 矢印の追加
-                val arrow = TextView(this@PhylogeneticTree)
-                arrow.text = ">"
-                val aparams = LinearLayout.LayoutParams(wrapContent, wrapContent)
-                aparams.weight = 0.5F
-                layout.addView(arrow, aparams)
+        while (parentId != null && parentId != 0) {
+            val parent = getItemFromDatabase(parentId!!)
+            val pname = parent?.name
+            if (pname == null) {
+                break
             }
+            parentList.add(pname)
+            parentId = parent.parent
+        }
+        for (pname in parentList.asReversed()) {
+            // 親アイテムボタンの追加
+            val parentLink = Button(this@PhylogeneticTree)
+            parentLink.text = pname
+            parentLink.textSize = 10F
+            parentLink.tag = pname
+            parentLink.setOnClickListener(listener)
+            val wrapContent = ViewGroup.LayoutParams.WRAP_CONTENT
+            val lparams = LinearLayout.LayoutParams(wrapContent, wrapContent)
+            lparams.weight = 1F
+            layout.addView(parentLink, lparams)
+            // 矢印の追加
+            val arrow = TextView(this@PhylogeneticTree)
+            arrow.text = ">"
+            val aparams = LinearLayout.LayoutParams(wrapContent, wrapContent)
+            aparams.weight = 0.5F
+            layout.addView(arrow, aparams)
+
         }
     }
 
     private inner class ParentLinkListener : View.OnClickListener {
+        // 親アイテムをクリックしたときのイベント関数
         override fun onClick(view: View) {
-            Log.i("MyPlantpediA", view.id.toString())
+            Log.i("MyPlantpediA id string", view.id.toString())
             Log.i("MyPlantpediA", view.tag.toString())
-
+            var nextId :Int?
+            runBlocking {
+                nextId = getIdFromName(view.tag.toString())
+            }
             val intent2PhylogeneticTree =
                      Intent(this@PhylogeneticTree, PhylogeneticTree::class.java).apply {
-                            putExtra("currentName", view.tag.toString())
+                            putExtra("currentId", nextId)
              }
             startActivity(intent2PhylogeneticTree)
         }
+    }
+    suspend fun getIdFromName(name: String): Int? {
+        val db = SpeciesRoomDatabase.getDatabase(this@PhylogeneticTree)
+        val speciesDao = db.speciesDao()
+        val item = speciesDao.getByName(name)
+        return item?.id
     }
     // endregion
 
@@ -276,12 +293,20 @@ class PhylogeneticTree : AppCompatActivity() {
     // endregion
 
     // region childrenItemList
+    // 子アイテムリストをデータベースから取得する
+    suspend fun getChildItemListFromDatabase(item: SpeciesEntity?): List<String> {
+        val curId = item?.id as Int
+        val db = SpeciesRoomDatabase.getDatabase(this@PhylogeneticTree)
+        val speciesDao = db.speciesDao()
+        val childrenItem = speciesDao.getChildrenItem(curId) as List<SpeciesEntity>
+        return childrenItem.map { it.name } as List<String>
+    }
     // 子アイテムリストを表示する
-    fun showChildrenItemList() {
+    suspend fun showChildrenItemList() {
         var stringList = mutableListOf<String>()
         Log.i("MyPlantpediA children list = ", stringList.size.toString())
         if (currentItem != null) {
-            val childList = currentItem?.childrenName
+            val childList = getChildItemListFromDatabase(currentItem)
             if (childList != null && childList.isNotEmpty()) {
                 for (item in childList) {
                     if (item != "") {
@@ -303,7 +328,6 @@ class PhylogeneticTree : AppCompatActivity() {
 
     private inner class ViewHolderList (item: View) : RecyclerView.ViewHolder(item) {
         val speciesName: TextView = item.findViewById(R.id.rowName)
-
         init {
             item.setOnClickListener(ListItemClickListener())
         }
@@ -339,13 +363,13 @@ class PhylogeneticTree : AppCompatActivity() {
             val item = view.findViewById<TextView>(R.id.rowName).text.toString()
             val logText = "you choose " + item
             Log.i("MyPlantpediA children Item Click", logText)
-
-            var parentTreeText = intent.getStringArrayListExtra("parentTree")
-            parentTreeText?.add(currentItem?.name)
+            val nextId: Int?
+            runBlocking {
+                nextId = getIdFromName(item)
+            }
 
             val intent2PhylogeneticTree = Intent(this@PhylogeneticTree, PhylogeneticTree::class.java).apply {
-                    putExtra("currentName", item)
-                    putExtra("parentTree", parentTreeText)
+                    putExtra("currentId", nextId)
            }
             startActivity(intent2PhylogeneticTree)
             // トーストの表示
@@ -359,7 +383,9 @@ class PhylogeneticTree : AppCompatActivity() {
             .setTitle("このアイテムを削除する")
             .setMessage("子アイテムもすべて削除しますが、良いですか？")
             .setPositiveButton("OK") { dialog, which ->
-                deleteCurrentItem(pos)
+                lifecycleScope.launch {
+                    deleteCurrentItem(pos)
+                }
             }
             .setNegativeButton("Cancel") { dialog, which ->
                 dialog.dismiss()
@@ -369,15 +395,13 @@ class PhylogeneticTree : AppCompatActivity() {
     }
 
     // posの位置の子アイテムを削除する
-    fun deleteCurrentItem(pos: Int) {
-        val newList = currentItem?.childrenName as MutableList<String>?
+    suspend fun deleteCurrentItem(pos: Int) {
+        val newList = getChildItemListFromDatabase(currentItem) as MutableList<String>
         val deleteItemName = newList?.get(pos)
-        newList?.removeAt(pos)
         lifecycleScope.launch {
             deleteSpeciesDatabase(deleteItemName)
             saveSpeiciesDatabase()
         }
-        currentItem?.childrenName = newList!!
         // 再表示する
         showChildrenItemList()
     }
@@ -396,12 +420,6 @@ class PhylogeneticTree : AppCompatActivity() {
                 lifecycleScope.launch {
                     val result = insertNewItem(newItemName) as Boolean
                     if (result) {
-                        var childrenList = mutableListOf<String>()
-                        if (!currentItem?.childrenName.isNullOrEmpty()) {
-                            childrenList = currentItem?.childrenName as MutableList<String>
-                        }
-                        childrenList.add(newItemName)
-                        currentItem?.childrenName = childrenList
                         saveSpeiciesDatabase()
                         showChildrenItemList()
                     }
@@ -414,9 +432,8 @@ class PhylogeneticTree : AppCompatActivity() {
     }
 
     suspend fun insertNewItem(newItemName: String): Boolean {
-        val nextParentList = currentItem?.parentName!! + currentItem?.name
-        Log.i("MyPlantpediA", nextParentList.toString())
-        val newItem = SpeciesEntity(newItemName, "", nextParentList as List<String>, listOf<String>())
+        val curId = currentItem?.id as Int
+        val newItem = SpeciesEntity(0, curId, newItemName, "")
 
         val db = SpeciesRoomDatabase.getDatabase(this@PhylogeneticTree)
         val speciesDao = db.speciesDao()

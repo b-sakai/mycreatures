@@ -13,11 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.websarva.wings.android.mycreatures.database.SpeciesEntity
+import com.websarva.wings.android.mycreatures.database.SpeciesRoomDatabase
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.coroutines.suspendCoroutine
 
 class RecentItemView : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,9 +46,16 @@ class RecentItemView : AppCompatActivity() {
             val date = Date(item.createdAt)
             val formatter = SimpleDateFormat("yyyy.MM.dd 'at' HH::mm:ss")
             val createdTime = formatter.format(date)
+            var parentName = "" as String?
+            lifecycleScope.launch {
+                val db = SpeciesRoomDatabase.getDatabase(this@RecentItemView)
+                val speciesDao = db.speciesDao()
+                val parent = speciesDao.get(item.parent)
+                parentName = parent?.name
+            }
             var menu = mutableMapOf<String, Any>(
                 "speciesName" to item.name,
-                "parentName" to if (item.parentName.isNullOrEmpty()) "" else item.parentName.last(),
+                "parentName" to if (parentName == null) "" else parentName!!,
                 "createDate" to createdTime
             )
             menuList.add(menu)
@@ -103,17 +111,24 @@ class RecentItemView : AppCompatActivity() {
     private inner class ItemClickListener : View.OnClickListener {
         override fun onClick(view: View) {
             val tvSpeciesName = view.findViewById<TextView>(R.id.speciesName)
-            val tvParentName = view.findViewById<TextView>(R.id.parentName)
             val speciesName = tvSpeciesName.text.toString()
-            val parentName = tvParentName.text.toString()
-            val msg = speciesName
-            Toast.makeText(this@RecentItemView, msg, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@RecentItemView, speciesName, Toast.LENGTH_SHORT).show()
+
+            var nextId :Int?
+            runBlocking {
+                nextId = getIdFromName(speciesName)
+            }
 
             val intent2PhylogeneticTree = Intent(this@RecentItemView, PhylogeneticTree::class.java).apply {
-                putExtra("currentName", speciesName)
-                putExtra("parentTree", arrayListOf<String>(parentName))
+                putExtra("currentId", nextId)
             }
             startActivity(intent2PhylogeneticTree)
+        }
+        suspend fun getIdFromName(name: String): Int? {
+            val db = SpeciesRoomDatabase.getDatabase(this@RecentItemView)
+            val speciesDao = db.speciesDao()
+            val item = speciesDao.getByName(name)
+            return item?.id
         }
 
     }

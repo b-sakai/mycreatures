@@ -11,13 +11,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.websarva.wings.android.mycreatures.database.SpeciesEntity
+import com.websarva.wings.android.mycreatures.database.SpeciesRoomDatabase
 import dev.bandb.graphview.AbstractGraphAdapter
 import dev.bandb.graphview.graph.Graph
 import dev.bandb.graphview.graph.Node
@@ -25,6 +24,7 @@ import dev.bandb.graphview.layouts.tree.BuchheimWalkerConfiguration
 import dev.bandb.graphview.layouts.tree.BuchheimWalkerLayoutManager
 import dev.bandb.graphview.layouts.tree.TreeEdgeDecoration
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 class TreeView : AppCompatActivity() {
@@ -131,7 +131,8 @@ class TreeView : AppCompatActivity() {
             val name = item.name
             val currentNode = nodes[name]
             //Log.i("MyPlantpediA parent", name)
-            for (child in item.childrenName) {
+            val childrenName = getChildItemListFromDatabase(item)
+            for (child in childrenName) {
                 val childNode = nodes[child]
                 if (currentNode != null && childNode != null) {
                     graph.addEdge(currentNode, childNode)
@@ -142,6 +143,15 @@ class TreeView : AppCompatActivity() {
         Log.i("MyPlantpediA", graph.toString())
         return graph
      }
+
+    // 子アイテムリストをデータベースから取得する
+    suspend fun getChildItemListFromDatabase(item: SpeciesEntity?): List<String> {
+        val curId = item?.id as Int
+        val db = SpeciesRoomDatabase.getDatabase(this@TreeView)
+        val speciesDao = db.speciesDao()
+        val childrenItem = speciesDao.getChildrenItem(curId) as List<SpeciesEntity>
+        return childrenItem.map { it.name } as List<String>
+    }
 
     private suspend fun createTestGraph():Graph {
         val graph = Graph()
@@ -179,16 +189,24 @@ class TreeView : AppCompatActivity() {
             val logText = "you choose " + item
             Log.i("MyPlantpediA children Item Click", logText)
 
-            var parentTreeText = arrayListOf<String>()
+            var nextId :Int?
+            runBlocking {
+                nextId = getIdFromName(item)
+            }
 
             val intent2PhylogeneticTree = Intent(this@TreeView, PhylogeneticTree::class.java).apply {
-                putExtra("currentName", item)
-                putExtra("parentTree", parentTreeText)
+                putExtra("currentId", nextId)
             }
             startActivity(intent2PhylogeneticTree)
             // トーストの表示
             // Toast.makeText(this@PhylogeneticTree, show, Toast.LENGTH_LONG).show()
         }
+    }
+    suspend fun getIdFromName(name: String): Int? {
+        val db = SpeciesRoomDatabase.getDatabase(this@TreeView)
+        val speciesDao = db.speciesDao()
+        val item = speciesDao.getByName(name)
+        return item?.id
     }
 
     private suspend fun updateGraph() {

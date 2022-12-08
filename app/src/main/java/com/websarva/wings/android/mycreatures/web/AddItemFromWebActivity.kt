@@ -1,4 +1,4 @@
-package com.websarva.wings.android.mycreatures
+package com.websarva.wings.android.mycreatures.web
 
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -14,6 +14,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.websarva.wings.android.mycreatures.R
+import com.websarva.wings.android.mycreatures.database.SpeciesEntity
+import com.websarva.wings.android.mycreatures.database.SpeciesRoomDatabase
 import kotlinx.coroutines.launch
 
 
@@ -24,6 +27,8 @@ class AddItemFromWebActivity : AppCompatActivity() {
     private var apgValue = arrayListOf<String>()
     private var apgExplanation: String = ""
 
+    private var parentName: String = ""
+    private var parentId: Int = 0
     private var newItem: SpeciesEntity? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,12 +67,12 @@ class AddItemFromWebActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(decorator)
     }
 
-    private inner class RecyclerAdapter(val list: List<String>) : RecyclerView.Adapter<AddItemFromWebActivity.ViewHolderList>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddItemFromWebActivity.ViewHolderList {
+    private inner class RecyclerAdapter(val list: List<String>) : RecyclerView.Adapter<ViewHolderList>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderList {
             val itemView = LayoutInflater.from(parent.context).inflate(R.layout.row_children, parent, false)
             return ViewHolderList(itemView)
         }
-        override fun onBindViewHolder(holder: AddItemFromWebActivity.ViewHolderList, position: Int) {
+        override fun onBindViewHolder(holder: ViewHolderList, position: Int) {
             holder.speciesName.text = list[position]
         }
         override fun getItemCount(): Int = list.size
@@ -81,38 +86,30 @@ class AddItemFromWebActivity : AppCompatActivity() {
     public fun addThisItem(view: View) {
         Log.i("MyPlantpediA", "add button clicked")
         return
-
         createNewItem()
         lifecycleScope.launch {
-            val result = insertNewItem(newItemName) as Boolean
+            val result = insertNewItem()
             if (result) {
-                var childrenList = mutableListOf<String>()
-                if (!newItem?.childrenName.isNullOrEmpty()) {
-                    childrenList = newItem?.childrenName as MutableList<String>
-                }
-                childrenList.add(newItemName)
-                newItem?.childrenName = childrenList
                 saveSpeiciesDatabase()
             }
         }
     }
 
     fun createNewItem() {
-        newItem?.name = newItemName
+        newItem = SpeciesEntity(0, parentId, newItemName,"")
     }
 
-    suspend fun insertNewItem(newItemName: String): Boolean {
-        val nextParentList = newItem?.parentName!! + newItem?.name
-        Log.i("MyPlantpediA", nextParentList.toString())
-        val newItem = SpeciesEntity(newItemName, "", nextParentList as List<String>, listOf<String>())
-
+    suspend fun insertNewItem(): Boolean {
         val db = SpeciesRoomDatabase.getDatabase(this@AddItemFromWebActivity)
         val speciesDao = db.speciesDao()
         if (speciesDao.isRowIsExist(newItemName)) {
             Toast.makeText(this@AddItemFromWebActivity, "この種類はすでに登録されています。違う名前を指定するか登録済みのアイテムを削除してください。", Toast.LENGTH_LONG).show()
             return false
+        } else if (newItem == null) {
+            Toast.makeText(this@AddItemFromWebActivity, "error newItem == null", Toast.LENGTH_SHORT).show()
+            return false
         } else {
-            speciesDao.insertWithTimestamp(newItem)
+            speciesDao.insertWithTimestamp(newItem!!)
             return true
         }
     }

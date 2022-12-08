@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.websarva.wings.android.mycreatures.database.SpeciesEntity
+import com.websarva.wings.android.mycreatures.database.SpeciesRoomDatabase
 import com.websarva.wings.android.opengl.ShaderView
 import kotlinx.coroutines.launch
 
@@ -18,9 +20,9 @@ class MainActivity : AppCompatActivity() {
 
         glView = findViewById<ShaderView>(R.id.shaderView)
         lifecycleScope.launch {
-            //deleteDatabase()
-            //createBaseDatabase()
-            //checkDatabase()
+            deleteDatabase()
+            createBaseDatabase()
+            checkDatabase()
         }
     }
 
@@ -34,30 +36,25 @@ class MainActivity : AppCompatActivity() {
         val db = SpeciesRoomDatabase.getDatabase(this@MainActivity)
         val speciesDao = db.speciesDao()
 
+
         val res = resources
 
+        val root = SpeciesEntity(1, 0,"root", "")
 
-        var angiosperm = SpeciesEntity(res.getString(R.string.angiosperm), "", listOf("root"), listOf<String>())
+        var angiosperm = SpeciesEntity(2, 1, res.getString(R.string.angiosperm), "")
         angiosperm.explanation = "一般に花と呼ばれる生殖器官の特殊化が進んで、胚珠が心皮にくるまれて子房の中に収まったもの (from wikipedia)"
 
-        var gymnosperm = SpeciesEntity(res.getString(R.string.gymnosperm), "", listOf("root"), listOf<String>())
+        var gymnosperm = SpeciesEntity(3, 1, "裸子植物", "")
         gymnosperm.explanation = "種子を形成する植物のうち、胚珠がむき出しになっているもの"
 
-        var pteridophytes = SpeciesEntity(res.getString(R.string.pteridophytes), "", listOf("root"), listOf<String>())
+        var pteridophytes = SpeciesEntity(4, 1, res.getString(R.string.pteridophytes), "")
         pteridophytes.explanation = "種子植物でない植物の総称"
 
-        val rootChildren = listOf(angiosperm.name, gymnosperm.name, pteridophytes.name)
-        val root = SpeciesEntity("root", "", listOf<String>(), rootChildren)
 
-        var eudicots = SpeciesEntity(res.getString(R.string.eudicots), "", listOf(angiosperm.name), listOf<String>())
+        var eudicots = SpeciesEntity(5, 2, res.getString(R.string.eudicots), "")
         eudicots.explanation = "別名三溝粒類と呼ばれる、花粉の発芽溝または発芽孔が基本的に3個あるグループ。"
-        var chrysanthemums = SpeciesEntity("キク類", "", listOf<String>(), listOf<String>())
+        var chrysanthemums = SpeciesEntity(6, 5,"キク類", "")
         chrysanthemums.explanation = "バラ類と並ぶ分類のためのクレード（ある共通の祖先から進化した生物すべてを含む生物群のこと）の一つ"
-
-        setChildren(angiosperm, eudicots)
-        setChildren(eudicots, chrysanthemums)
-
-
 
         speciesDao.insertWithTimestamp(root)
         speciesDao.insertWithTimestamp(angiosperm)
@@ -67,18 +64,13 @@ class MainActivity : AppCompatActivity() {
         speciesDao.insertWithTimestamp(chrysanthemums)
     }
 
-    fun setChildren(parent: SpeciesEntity, child: SpeciesEntity) {
-        child.parentName = parent.parentName + parent.name
-        parent.childrenName = parent.childrenName + child.name
-    }
-
     suspend fun checkDatabase() {
         val db = SpeciesRoomDatabase.getDatabase(this@MainActivity)
         val speciesDao = db.speciesDao()
-        val eudicots = speciesDao.get(resources.getString(R.string.eudicots))
+        val eudicots = speciesDao.get(4)
         Log.i("MyplantpediA", eudicots.toString())
 
-        val root = speciesDao.get("root")
+        val root = speciesDao.get(0)
         Log.i("MyplantpediA", root.toString())
 
     }
@@ -87,7 +79,7 @@ class MainActivity : AppCompatActivity() {
     public fun createPhylogeneticTreeView(view: View) {
         Log.i("MyPaintpediA", "cratePhylogeneticTreeView called.")
         val intent2PhylogeneticTree = Intent(this@MainActivity, PhylogeneticTree::class.java).apply {
-            putExtra("currentName", "root")
+            putExtra("currentId", 1)
         }
 
         startActivity(intent2PhylogeneticTree)
