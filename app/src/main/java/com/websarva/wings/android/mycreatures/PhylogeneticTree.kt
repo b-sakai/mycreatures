@@ -398,7 +398,7 @@ class PhylogeneticTree : AppCompatActivity() {
     suspend fun deleteCurrentItem(pos: Int) {
         val newList = getChildItemListFromDatabase(currentItem) as MutableList<String>
         val deleteItemName = newList?.get(pos)
-        lifecycleScope.launch {
+        runBlocking {
             deleteSpeciesDatabase(deleteItemName)
             saveSpeiciesDatabase()
         }
@@ -493,7 +493,19 @@ class PhylogeneticTree : AppCompatActivity() {
     suspend fun deleteSpeciesDatabase(deleteItemName: String?) {
         val db = SpeciesRoomDatabase.getDatabase(this@PhylogeneticTree)
         val speciesDao = db.speciesDao()
-        deleteItemName?.let { speciesDao.deleteByKey(it) }
+        // 子供も削除
+        val item = deleteItemName?.let { speciesDao.getByName(it) }
+        val key = item?.id as Int
+        val children = speciesDao.getChildrenItem(key)
+        if (children.isEmpty()) { // 子供がいないとき、こいつだけ削除
+            deleteItemName?.let { speciesDao.deleteByKey(it) }
+        } else { // 子供がいるとき再帰呼び出しして削除
+            for (child in children) {
+                deleteSpeciesDatabase(child.name)
+            }
+            // 子供を削除し終えた後で本体も削除
+            deleteItemName?.let { speciesDao.deleteByKey(it) }
+        }
     }
     // endregion
 
